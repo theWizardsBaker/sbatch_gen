@@ -44,10 +44,9 @@ begin
 	node_header = []
 
 	# get all the cluster info
-	# contents = `sinfo -S partitionname -O partitionname,available,cpus,cpusstate,defaulttime,freemem,memory`
-	# # for testing only 
-	file = File.open("sinfo_output", "rb")
-	contents = file.read
+	contents = `sinfo -S partitionname -O partitionname,available,cpus,cpusstate,defaulttime,freemem,memory`
+	# for testing only 
+	# contents = `cat sinfo_output`
 	# put all the clusters into a selectable object
 	contents.split("\n").each_with_index do |line, index| 
 		line = line.split("\s")
@@ -120,9 +119,12 @@ begin
 		printf " #{minutes} minutes".green if minutes and minutes != '00'
 		printf " #{seconds} seconds".green if seconds and seconds != '00'
 		puts "."
-		printf  "Estimate job completion time? (days-hour:min:seconds): "
+		puts "Time formats include: \n#{"minutes".yellow}\n#{"minutes:seconds".yellow}\n#{"hours:minutes:seconds".yellow}\n#{"days-hours".yellow}\n#{"days-hours:minutes".yellow}\n#{"days-hours:minutes:seconds".yellow}"
+		printf  "Estimate job completion time: "
 		time = gets.chomp
+		time = selected_node[:time_limit] if time.empty?
 	end
+
 
 	# check if notifications
 	printf "\nWould you like email notification for you job's status? (yes / no): "
