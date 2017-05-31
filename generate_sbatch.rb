@@ -44,9 +44,9 @@ begin
 	node_header = []
 
 	# get all the cluster info
-	contents = `sinfo -S partitionname -O partitionname,available,cpus,cpusstate,defaulttime,freemem,memory`
+	# contents = `sinfo -S partitionname -O partitionname,available,cpus,cpusstate,defaulttime,freemem,memory`
 	# for testing only 
-	# contents = `cat sinfo_output`
+	contents = `cat sinfo_output`
 	# put all the clusters into a selectable object
 	contents.split("\n").each_with_index do |line, index| 
 		line = line.split("\s")
@@ -119,9 +119,11 @@ begin
 		printf " #{minutes} minutes".green if minutes and minutes != '00'
 		printf " #{seconds} seconds".green if seconds and seconds != '00'
 		puts "."
-		puts "Time formats include: \n#{"minutes".yellow}\n#{"minutes:seconds".yellow}\n#{"hours:minutes:seconds".yellow}\n#{"days-hours".yellow}\n#{"days-hours:minutes".yellow}\n#{"days-hours:minutes:seconds".yellow}"
+		puts "Time formats include:"
+		puts "minutes (20) \nminutes:seconds (20:15) \nhours:minutes:seconds (2:20:15)\ndays-hours (1-2)\ndays-hours:minutes (1-2:20) \ndays-hours:minutes:seconds (1-2:20:15)".yellow
 		printf  "Estimate job completion time: "
 		time = gets.chomp
+		time = time.gsub(/[A-z]/, '')
 		time = selected_node[:time_limit] if time.empty?
 	end
 
@@ -139,7 +141,7 @@ begin
 			email = gets.chomp.downcase
 		end
 
-		until %w( BEGIN END FAIL ALL).include? update_types
+		until %w( BEGIN END FAIL ALL ).include? update_types
 			puts "Select the job status for notifications"
 			printf "select #{"BEGIN END FAIL".green} or #{"ALL".green}: "
 			update_types = gets.chomp.upcase
